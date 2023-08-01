@@ -9,19 +9,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.facebook.dto.HeartDTO;
 import com.facebook.dto.PostDTO;
 import com.facebook.dto.ReplyDTO;
 import com.facebook.dto.ResponseDTO;
 import com.facebook.dto.UserDTO;
+import com.facebook.entity.HeartEntity;
 import com.facebook.entity.PostEntity;
 import com.facebook.entity.ReplyEntity;
 import com.facebook.entity.UserEntity;
+import com.facebook.service.HeartService;
 import com.facebook.service.PostService;
 import com.facebook.service.ReplyService;
 import com.facebook.service.UserService;
@@ -36,6 +40,7 @@ public class PostController {
 	private final UserService userService;
 	private final PostService postService;
 	private final ReplyService replyService;
+	private final HeartService heartService;
 	
 	// 글 작성
 	@PostMapping
@@ -139,6 +144,25 @@ public class PostController {
 			
 			return ResponseEntity.badRequest().body(response);
 		}
+	}	// 좋아요 기록도 없애는 기능 추가해야함
+	
+	// 좋아요 클릭 후 heart 생성
+	@PostMapping("/{postId}")
+	public ResponseEntity<?> addHeart(@AuthenticationPrincipal String userId , @RequestBody HeartDTO dto, @PathVariable("postId") Long postId){
+		
+		dto.setUser(userId);
+		
+		dto.setPostId(postId);
+		
+		HeartEntity entity = HeartDTO.dtoToEntity(dto);
+		
+		List<HeartEntity> list = heartService.addHeart(entity);
+		
+		List<HeartDTO> dtos = list.stream().map(HeartDTO::new).collect(Collectors.toList());
+		
+		ResponseDTO<ReplyDTO> response = ResponseDTO.<ReplyDTO>builder().data6(dtos).build();
+		
+		return ResponseEntity.ok().body(response);
 	}
 	
 }

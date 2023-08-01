@@ -21,4 +21,5 @@ public class ResponseDTO<T> {
 	private List<UserDTO> data3;
 	private Long data4;
 	private UserDTO data5;
+	private List<HeartDTO> data6;
 }

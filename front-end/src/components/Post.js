@@ -19,6 +19,10 @@ class Post extends React.Component {
       share:0,
       likes: 0,
       liked: false,
+      heart: {
+        userId: "bb89b9cc88429627018842963b6c0000",
+        postId: 3,
+      },
       isMenuOpen: false,
       modalOpen: false,
       commentText: '',
@@ -43,17 +47,27 @@ class Post extends React.Component {
     this.setState({ share: this.state.share + 1 });
   };
 
-  handleLike = () => {
+  handleLike = (postId) => {
     if (this.state.liked) {
       this.setState((prevState) => ({
         likes: prevState.likes - 1,
         liked: false,
       }));
     } else {
-      this.setState((prevState) => ({
-        likes: prevState.likes + 1,
-        liked: true,
-      }));
+      const postId = this.state.item.id;
+      const data = {};
+      call(`/post/${postId}`, 'POST', data)
+          .then(() => {
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+            toast.error('좋아요에 오류가 발생했습니다.');
+          }
+        );
     }
   };
 

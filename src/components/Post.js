@@ -65,7 +65,7 @@ class Post extends React.Component {
           })
           .catch((error) => {
             console.error('Error:', error);
-            toast.error('좋아요에 오류가 발생했습니다.');
+            toast.error('좋아요 오류가 발생했습니다.');
           }
         );
     }

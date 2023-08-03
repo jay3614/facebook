@@ -26,7 +26,7 @@ class Post extends React.Component {
       isMenuOpen: false,
       modalOpen: false,
       commentText: '',
-      comments: []
+      comments: [],
     };
     this.handleModalClose = this.handleModalClose.bind(this);
   }

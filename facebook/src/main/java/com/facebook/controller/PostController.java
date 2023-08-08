@@ -146,7 +146,7 @@ public class PostController {
 		}
 	}	// 좋아요 기록도 없애는 기능 추가해야함
 	
-	// 좋아요 클릭 후 heart 생성
+	// 좋아요 기능
 	@PostMapping("/{postId}")
 	public ResponseEntity<?> addHeart(@AuthenticationPrincipal String userId , @RequestBody HeartDTO dto, @PathVariable("postId") Long postId){
 		
@@ -154,15 +154,29 @@ public class PostController {
 		
 		dto.setPostId(postId);
 		
-		HeartEntity entity = HeartDTO.dtoToEntity(dto);
+		// db에서 userId와 postId를 기준으로 검색하여 이미 좋아요를 눌렀는지 여부 체크 후 안눌렀다면 if문 실행, 눌렀다면 else문 실행하여 좋아요와 취소를 구분
+		if(heartService.existHeart(userId, postId) == 0) {
+			HeartEntity entity = HeartDTO.dtoToEntity(dto);
+			
+			List<HeartEntity> list = heartService.addHeart(entity);
+			
+			List<HeartDTO> dtos = list.stream().map(HeartDTO::new).collect(Collectors.toList());
+			
+			ResponseDTO<ReplyDTO> response = ResponseDTO.<ReplyDTO>builder().data6(dtos).build();
+			
+			return ResponseEntity.ok().body(response);
+		}else if(heartService.existHeart(userId, postId) == 1){
+			
+			heartService.removeHeart(userId, postId);
+			
+			return ResponseEntity.ok().body(null);
+		}else { // 에러가 발생하면 넘어오는 구간
+			
+			System.out.println("에러 발생");
+			
+			return ResponseEntity.ok().body(null);
+		}
 		
-		List<HeartEntity> list = heartService.addHeart(entity);
-		
-		List<HeartDTO> dtos = list.stream().map(HeartDTO::new).collect(Collectors.toList());
-		
-		ResponseDTO<ReplyDTO> response = ResponseDTO.<ReplyDTO>builder().data6(dtos).build();
-		
-		return ResponseEntity.ok().body(response);
 	}
 	
 }

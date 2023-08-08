@@ -26,17 +26,25 @@ public class HeartService {
 	}
 	
 	// 좋아요 갯수 리턴
-	public int countHeart(final HeartEntity entity) {
-		int result = heartRepository.getCountByPostId(null);
+	public int countHeart(Long postId) {
+		
+		int result = heartRepository.getCountByPostId(postId);
 		
 		return result;
 	}
 	
+	// 좋아요 클릭여부 확인
+	public int existHeart(String userId, Long postId) {
+		
+		int result = heartRepository.getCountByUserIdAndPostId(userId, postId);
+		
+		return result;
+	}
 	
 	// 좋아요 해제
-	private void removeHeart() {
+	public void removeHeart(String userId, Long postId) {
 		
-		
+		heartRepository.deleteByUserIdAndPostId(userId, postId);
 		
 	}
 	
